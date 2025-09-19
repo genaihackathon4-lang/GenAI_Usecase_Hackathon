@@ -1,0 +1,36 @@
+steps:
+  # Step 1: Build React app
+  - name: 'gcr.io/cloud-builders/npm'
+    dir: 'Hackthon/Frontend/startup-evaluation'
+    args: ['install']
+
+  - name: 'gcr.io/cloud-builders/npm'
+    dir: 'Hackthon/Frontend/startup-evaluation'
+    args: ['run', 'build']
+
+  # Step 2: Build Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/intense-subject-470817-v2/hackathon-fe/frontend:$COMMIT_SHA', '.']
+    dir: 'Hackthon/Frontend/startup-evaluation'
+
+  # Step 3: Push image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/intense-subject-470817-v2/hackathon-fe/frontend:$COMMIT_SHA']
+
+   # Step 4 : Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      [
+        'run', 'deploy', 'frontend',
+        '--image', 'us-central1-docker.pkg.dev/intense-subject-470817-v2/hackathon-fe/frontend:${COMMIT_SHA}',
+        '--region', 'us-central1',
+        '--platform', 'managed',
+        '--allow-unauthenticated'
+      ]
+
+images:
+  - 'us-central1-docker.pkg.dev/intense-subject-470817-v2/hackathon-fe/frontend:${COMMIT_SHA}'
+
+options:
+  logging: CLOUD_LOGGING_ONLY

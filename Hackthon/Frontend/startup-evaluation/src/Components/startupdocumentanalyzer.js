@@ -104,7 +104,7 @@ export default function App() {
       formData.append("founder_email", founder_email); // make sure userEmail comes from your state or input
    
       const resp = await axios.post(
-        "https://8000-saisirisha111-agenticai-5z4jw52towo.ws-us121.gitpod.io/full-analysis",
+        "https://8000-genaiinvest-genaiusecas-x0q8cpc9j82.ws-us121.gitpod.io/full-analysis",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },

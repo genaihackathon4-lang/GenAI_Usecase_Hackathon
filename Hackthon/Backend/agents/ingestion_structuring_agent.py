@@ -29,7 +29,7 @@ logger = logging.getLogger("pipeline_logger")
 
 
 # ===== GCS Config =====
-BUCKET_NAME = "ai-analyst-uploads-files"
+BUCKET_NAME = "ai-analyst-uploads-files1"
 storage_client = storage.Client()
 
 # ===== Request Schema =====
