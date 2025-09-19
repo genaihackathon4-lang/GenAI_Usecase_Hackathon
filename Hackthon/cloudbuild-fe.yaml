@@ -13,7 +13,7 @@ steps:
     args: ['build', '-t', 'us-central1-docker.pkg.dev/intense-subject-470817-v2/hackathon-fe/frontend:$COMMIT_SHA', '.']
     dir: 'Hackthon/Frontend/startup-evaluation'
 
-  # Step 3: Push image to Artifact Registry
+  # Step 3: Push image to Artifact Registry in gcp
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'us-central1-docker.pkg.dev/intense-subject-470817-v2/hackathon-fe/frontend:$COMMIT_SHA']
 
