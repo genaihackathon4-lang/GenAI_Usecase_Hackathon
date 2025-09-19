@@ -7,15 +7,15 @@ WORKDIR /app
 # Install system dependencies
 RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and install Python dependencies
+# Copy requirements and install dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the backend code into container
+# Copy backend code into container
 COPY . .
 
-# Expose port (Cloud Run uses $PORT)
+# Expose port
 EXPOSE 8080
 
-# Run FastAPI app with Uvicorn
-CMD ["uvicorn", "agents.ingestion_structuring_agent:app", "--host", "0.0.0.0", "--port", "${PORT:-8080}"]
+# Run FastAPI app using sh -c to expand $PORT
+CMD ["sh", "-c", "uvicorn agents.ingestion_structuring_agent:app --host 0.0.0.0 --port ${PORT:-8080}"]

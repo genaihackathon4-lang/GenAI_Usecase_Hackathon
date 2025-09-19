@@ -26,7 +26,8 @@ steps:
         '--image', 'us-central1-docker.pkg.dev/intense-subject-470817-v2/hackathon-be/backend:${COMMIT_SHA}',
         '--region', 'us-central1',
         '--platform', 'managed',
-        '--allow-unauthenticated'
+        '--allow-unauthenticated',
+         '--timeout', '300s'
       ]
 
 
