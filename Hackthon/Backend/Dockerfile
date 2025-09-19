@@ -12,7 +12,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy Backend folder into container
-COPY Backend ./Backend
+COPY . .
 
 # Expose port
 EXPOSE 8080
