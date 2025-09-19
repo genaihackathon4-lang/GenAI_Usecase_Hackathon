@@ -24,7 +24,6 @@ logger = logging.getLogger("pipeline_logger")
 # logger=logging.getLogger("google.adk").setLevel(logging.DEBUG)
 
 
-# ===== GCS Config =====
 
 import tempfile
 
