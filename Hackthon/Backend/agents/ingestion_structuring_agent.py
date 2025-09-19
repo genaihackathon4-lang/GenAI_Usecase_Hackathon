@@ -24,13 +24,26 @@ logger = logging.getLogger("pipeline_logger")
 # logger=logging.getLogger("google.adk").setLevel(logging.DEBUG)
 
 
+# ===== GCS Config =====
 
-
-
+import tempfile
 
 # ===== GCS Config =====
-BUCKET_NAME = "ai-analyst-uploads-files1"
+credentials_env = os.environ.get("GOOGLE_CREDENTIALS_JSON")
+if credentials_env:
+    # Write the JSON to a temp file
+    with tempfile.NamedTemporaryFile(mode="w+", delete=False) as f:
+        f.write(credentials_env)
+        temp_cred_file = f.name
+
+    # Point GOOGLE_APPLICATION_CREDENTIALS to the temp file
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_cred_file
+
+# Initialize GCS client (it will use GOOGLE_APPLICATION_CREDENTIALS)
 storage_client = storage.Client()
+
+BUCKET_NAME = "ai-analyst-uploads-files1"
+# storage_client = storage.Client()
 
 # ===== Request Schema =====
 class DocRequest(BaseModel):
