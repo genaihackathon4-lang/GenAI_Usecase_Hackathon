@@ -18,3 +18,4 @@ ENV PORT=8080
 
 # Run FastAPI app (shell form so $PORT expands)
 CMD uvicorn Backend.agents.ingestion_structuring_agent:app --host 0.0.0.0 --port ${PORT:-8080}
+

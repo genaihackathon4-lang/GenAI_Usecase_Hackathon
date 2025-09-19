@@ -39,9 +39,10 @@ if credentials_env:
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_cred_file
 
 # Initialize GCS client (it will use GOOGLE_APPLICATION_CREDENTIALS)
-storage_client = storage.Client()
+
 
 BUCKET_NAME = "ai-analyst-uploads-files1"
+storage_client = storage.Client()
 # storage_client = storage.Client()
 
 # ===== Request Schema =====
