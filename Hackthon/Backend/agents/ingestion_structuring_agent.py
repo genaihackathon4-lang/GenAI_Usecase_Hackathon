@@ -28,7 +28,7 @@ logger = logging.getLogger("pipeline_logger")
 import tempfile
 
 # ===== GCS Config =====
-credentials_env = os.environ.get("GOOGLE_CREDENTIALS_JSON")
+credentials_env = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
 if credentials_env:
     # Write the JSON to a temp file
     with tempfile.NamedTemporaryFile(mode="w+", delete=False) as f:
