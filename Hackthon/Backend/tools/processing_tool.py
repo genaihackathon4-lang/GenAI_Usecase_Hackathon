@@ -76,7 +76,7 @@ def process_document(bucket_name: str, file_paths: list[str]) -> dict:
     print("I am in processing document task")
  
     for blob_name in file_paths:
-        bucket = get_storage_client.bucket(bucket_name)
+        bucket = get_storage_client().bucket(bucket_name)
         blob = bucket.blob(blob_name)
         
  
@@ -121,7 +121,7 @@ def extract_text_from_pdf(pdf_bytes: bytes) -> str:
         img_bytes = pix.tobytes("png")
  
         image = vision.Image(content=img_bytes)
-        response = get_vision_client.document_text_detection(image=image)
+        response = get_vision_client().document_text_detection(image=image)
  
         if response.error.message:
             return f"Cloud Vision API error: {response.error.message}"
@@ -161,7 +161,7 @@ def extract_text_from_ppt(ppt_bytes: bytes) -> str:
 
             # Vision API OCR
             image = vision.Image(content=img_bytes)
-            response = get_vision_client.document_text_detection(image=image)
+            response = get_vision_client().document_text_detection(image=image)
 
             if response.error.message:
                 logger.error(f"Vision API error on slide {slide_num}: {response.error.message}")
@@ -181,7 +181,7 @@ def transcribe_audio(blob) -> str:
     """
     Transcribes MP3 audio from a GCS blob and returns text directly.
     """
-    speech_client = get_speech_client
+    speech_client = get_speech_client()
 
     if not blob.exists():
         logger.error(f"Audio file not found: {blob.name} in {blob.bucket.name}")

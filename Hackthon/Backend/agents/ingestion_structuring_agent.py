@@ -28,19 +28,38 @@ logger = logging.getLogger("pipeline_logger")
 import tempfile
 
 # ===== GCS Config =====
-credentials_env = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
-if credentials_env:
-    # Write the JSON to a temp file
-    with tempfile.NamedTemporaryFile(mode="w+", delete=False) as f:
-        f.write(credentials_env)
-        temp_cred_file = f.name
+# credentials_env = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+# if credentials_env:
+#     # Write the JSON to a temp file
+#     with tempfile.NamedTemporaryFile(mode="w+", delete=False) as f:
+#         f.write(credentials_env)
+#         temp_cred_file = f.name
 
-    # Point GOOGLE_APPLICATION_CREDENTIALS to the temp file
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_cred_file
+#     # Point GOOGLE_APPLICATION_CREDENTIALS to the temp file
+#     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_cred_file
 
 # Initialize GCS client (it will use GOOGLE_APPLICATION_CREDENTIALS)
 
+# ===== GCS Config =====
+cred_env = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
 
+if cred_env:
+    try:
+        # Try to parse as JSON → this means we’re running in Cloud Run with inline JSON secret
+        creds_dict = json.loads(cred_env)
+        with tempfile.NamedTemporaryFile(mode="w+", delete=False) as f:
+            json.dump(creds_dict, f)
+            temp_cred_file = f.name
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_cred_file
+        logger.info("Loaded GCP credentials from inline JSON (Cloud Run mode).")
+    except json.JSONDecodeError:
+        # If not JSON, then assume it's a file path (local dev mode)
+        if os.path.exists(cred_env):
+            logger.info(f"Using GCP credentials from file path: {cred_env}")
+        else:
+            raise RuntimeError(f"GOOGLE_APPLICATION_CREDENTIALS is set but invalid: {cred_env}")
+else:
+    logger.warning("GOOGLE_APPLICATION_CREDENTIALS not set. Using default service account.")
 BUCKET_NAME = "ai-analyst-uploads-files1"
 storage_client = storage.Client()
 # storage_client = storage.Client()
