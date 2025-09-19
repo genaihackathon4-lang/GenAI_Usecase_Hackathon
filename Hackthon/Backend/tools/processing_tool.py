@@ -9,16 +9,58 @@ from pathlib import Path
 import logging
 from fastapi import HTTPException
 
-
+import tempfile
 
 load_dotenv()
 
 # logger=logging.getLogger("google.adk").setLevel(logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-storage_client = storage.Client()
-vision_client = vision.ImageAnnotatorClient()
+# storage_client = storage.Client()
+# vision_client = vision.ImageAnnotatorClient()
 
+# Lazy-loaded clients
+_storage_client = None
+_vision_client = None
+_speech_client = None
+
+
+def _setup_credentials():
+    """
+    If GOOGLE_CREDENTIALS_JSON is set (Cloud Run secret),
+    write it to a temp file and export GOOGLE_APPLICATION_CREDENTIALS.
+    """
+    credentials_env = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+    if credentials_env and not os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
+        with tempfile.NamedTemporaryFile(mode="w+", delete=False) as f:
+            f.write(credentials_env)
+            temp_file = f.name
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_file
+        logger.info("Wrote credentials to temp file")
+
+
+def get_storage_client():
+    global _storage_client
+    if _storage_client is None:
+        _setup_credentials()
+        _storage_client = storage.Client()
+    return _storage_client
+
+
+def get_vision_client():
+    global _vision_client
+    if _vision_client is None:
+        _setup_credentials()
+        _vision_client = vision.ImageAnnotatorClient()
+    return _vision_client
+
+
+def get_speech_client():
+    global _speech_client
+    if _speech_client is None:
+        _setup_credentials()
+        _speech_client = speech.SpeechClient()
+    return _speech_client
 
 def process_document(bucket_name: str, file_paths: list[str]) -> dict:
     """
@@ -34,7 +76,7 @@ def process_document(bucket_name: str, file_paths: list[str]) -> dict:
     print("I am in processing document task")
  
     for blob_name in file_paths:
-        bucket = storage_client.bucket(bucket_name)
+        bucket = get_storage_client.bucket(bucket_name)
         blob = bucket.blob(blob_name)
         
  
@@ -79,7 +121,7 @@ def extract_text_from_pdf(pdf_bytes: bytes) -> str:
         img_bytes = pix.tobytes("png")
  
         image = vision.Image(content=img_bytes)
-        response = vision_client.document_text_detection(image=image)
+        response = get_vision_client.document_text_detection(image=image)
  
         if response.error.message:
             return f"Cloud Vision API error: {response.error.message}"
@@ -119,7 +161,7 @@ def extract_text_from_ppt(ppt_bytes: bytes) -> str:
 
             # Vision API OCR
             image = vision.Image(content=img_bytes)
-            response = vision_client.document_text_detection(image=image)
+            response = get_vision_client.document_text_detection(image=image)
 
             if response.error.message:
                 logger.error(f"Vision API error on slide {slide_num}: {response.error.message}")
@@ -139,7 +181,7 @@ def transcribe_audio(blob) -> str:
     """
     Transcribes MP3 audio from a GCS blob and returns text directly.
     """
-    speech_client = speech.SpeechClient()
+    speech_client = get_speech_client
 
     if not blob.exists():
         logger.error(f"Audio file not found: {blob.name} in {blob.bucket.name}")
