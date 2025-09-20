@@ -74,6 +74,13 @@ export default function App() {
  
   const handleRemove = (idx) => {
     setFiles(prev => prev.filter((_, i) => i !== idx));
+    setFiles(prev => {
+      const updated = prev.filter((_, i) => i !== idx);
+      if (updated.length === 0) {
+        setReport(null);  // clear report if no files left
+      }
+      return updated;
+   });
   };
  
   const handleClearAll = () => {
