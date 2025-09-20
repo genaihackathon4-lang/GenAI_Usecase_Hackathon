@@ -45,6 +45,7 @@ export default function App() {
       });
       return Array.from(map.values());
     });
+    setReport(null);
   }, []);
  
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -68,6 +69,7 @@ export default function App() {
     if (fileList.length) onDrop(fileList);
     // reset value so same folder can be picked again
     e.target.value = null;
+    setReport(null);
   };
  
   const handleRemove = (idx) => {
@@ -140,7 +142,20 @@ export default function App() {
               variant="outlined"
               fullWidth
               value={founder_email}
-              onChange={(e) => setfounder_email(e.target.value)}
+              onChange={(e) => {
+                const email = e.target.value;
+                setfounder_email(email);
+ 
+                // Real-time Gmail validation
+                const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+                if (email && !gmailRegex.test(email)) {
+                  setError("Please enter a valid Gmail address.");
+                } else {
+                  setError(null);
+                }}
+              }
+              error={!!error} // highlights the input box if there's an error
+              helperText={error}
               sx={{ mb: 2 }}
             />
             <div
@@ -222,16 +237,16 @@ export default function App() {
                   variant="contained"
                   color="primary"
                   onClick={handleUpload}
-                  disabled={uploading || files.length === 0}
+                  disabled={uploading || files.length === 0 || !!report}
                   startIcon={<UploadIcon />}
                 >
-                  {uploading ? "Uploading..." : "Send to Analysis"}
+                  {uploading ? "Analyzing..." : "Send to Analysis"}
                 </Button>
               </Box>
  
               {uploading && (
                 <Box sx={{ mt: 2 }}>
-                  <Typography variant="body2">Upload progress: {progress}%</Typography>
+                  <Typography variant="body2">Analysis in progress: {progress}%</Typography>
                   <LinearProgress variant="determinate" value={progress} sx={{ mt: 1 }} />
                 </Box>
               )}
