@@ -513,110 +513,6 @@ from google.adk.agents import Agent
 import google.adk as adk
 
 
-# def extract_missing_fields_and_questions(structured_json: dict) -> dict:
-#     """
-#     Return the structured JSON and a dict of missing fields.
-#     LLM will rephrase the questions naturally.
-#     """
-#     null_keys = []
-
-#     def _extract_null_fields(d, prefix=""):
-#         for k, v in d.items():
-#             path = f"{prefix}.{k}" if prefix else k
-#             if isinstance(v, dict):
-#                 _extract_null_fields(v, path)
-#             elif isinstance(v, list):
-#                 continue
-#             elif v is None:
-#                 null_keys.append(path)
-
-#     _extract_null_fields(structured_json)
-
-#     print("Missing fields:",null_keys)
-#     return {
-#         "structured_json": structured_json,
-#         "missing_fields": null_keys  # Pass keys to LLM
-#     }
-
-# question_agent = Agent(
-#     name="question_agent",
-#     model="gemini-2.0-flash",
-#     instruction="""
-# You are a Question Generation Agent.
-
-# Steps:
-# 1. You must call the tool `extract_missing_fields_and_questions` with the input structured_json.
-# 2. Use only the tool output to decide which fields are missing.
-# 3. For each missing field, generate a clear human-friendly question.
-# 4. Return valid JSON only:
-
-# {
-#   "structured_json": { ... },
-#   "questions": {
-#      "missing_field_key": "natural question",
-#      ...
-#   }
-# }
-
-# Do NOT infer missing fields on your own. Always use the tool output.
-# """,
-  
-# )
-
-# question_agent = Agent(
-#     name="question_agent",
-#     model="gemini-2.0-flash",
-#     instruction="""
-# You are a Question Generation Agent.
-
-# You receive a JSON object with a single field:
-# - structured_json: the startup data
-
-# Your task:
-# 1. Call the tool `extract_missing_fields_and_questions(structured_json)` to detect all missing/null fields.
-# 2. For each missing field returned by the tool, generate a clear, human-friendly question.
-# 3. Return JSON with:
-#    {
-#      "structured_json": { ... },   # same as input
-#      "questions": {
-#         "missing_field_key": "natural question",
-#         ...
-#      }
-#    }
-
-# Do NOT hallucinate any fields; only generate questions for fields reported by the tool.
-# Do not add extra text or formatting; output must be valid JSON.
-# """,
-#     tools=[extract_missing_fields_and_questions],
-# )
-
-# question_agent = Agent(
-#     name="question_agent",
-#     model="gemini-2.0-flash",
-#     instruction="""
-#     You are a Question Generation Agent.
-
-#     You receive a JSON object with two fields:
-#     - structured_json: the startup data
-#     - missing_fields: a list of JSON keys that are missing
-
-#     For each key in missing_fields, generate a **clear, natural, human-friendly question**.
-#     Return the output as JSON, keeping structured_json intact, and a 'questions' object
-#     mapping each missing field key to its natural question. Example:
-
-#     {
-#       "structured_json": { ... },
-#       "questions": {
-#          "financials.ask_amount": "What is the investment amount being requested?",
-#          "team.ceo": "Who is the CEO of the company?"
-#       }
-#     }
-
-#     Do not hallucinate or add extra keys.
-#     """,
-#     tools=[extract_missing_fields_and_questions],
-# )
-
 
 question_agent = Agent(
     name="question_agent",
@@ -708,12 +604,7 @@ class FillerAgent(Agent):
         )
 
 
-# Instantiate the agent
-# filler_agent = FillerAgent(
-#     name="filler_agent",
-#     model="gemini-2.0-flash",
-#     instruction="Ask questions and fill missing fields in JSON."
-# )
+
 
 filler_agent = FillerAgent(
     name="filler_agent",
