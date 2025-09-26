@@ -13,3 +13,7 @@ uvicorn
 uvicorn[standard]
 google-cloud-texttospeech
 google-cloud-speech
+python-socketio[asyncio_server]==5.12.1
+python-multipart==0.0.6
+requests==2.32.0
+deprecated==1.2.14

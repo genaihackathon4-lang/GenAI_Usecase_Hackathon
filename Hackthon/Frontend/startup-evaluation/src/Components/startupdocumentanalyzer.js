@@ -110,10 +110,10 @@ export default function App() {
       files.forEach((f) => formData.append("files", f));
    
       // append user_email (FastAPI expects it as Form field)
-      formData.append("founder_email", founder_email); // make sure userEmail comes from your state or input
+      formData.append("user_email", founder_email); // make sure userEmail comes from your state or input
    
       const resp = await axios.post(
-        "https://hackathon-be-753168549263.us-central1.run.app/full-analysis",
+        "https://8000-genaihackat-genaiusecas-wqojhy5zxzd.ws-us121.gitpod.io/upload-and-analyze",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -259,13 +259,31 @@ export default function App() {
               )}
  
               {/* {error && <Typography color="error" sx={{ mt: 2 }}>{error}</Typography>} */}
-              {error && (
+              {/* {error && (
                 <Typography color="error" sx={{ mt: 2 }}>
                   {typeof error === "string"
                     ? error
                     : JSON.stringify(error, null, 2)}
                 </Typography>
-              )}
+              )} */}
+
+              {error && (<Box sx={{ mt: 2 }}>
+    {typeof error === "string" ? (
+      <Typography color="error">{error}</Typography>
+    ) : Array.isArray(error) ? (
+      error.map((errItem, i) => (
+        <Typography key={i} color="error">
+          {errItem.msg} (at {errItem.loc.join(" → ")})
+        </Typography>
+      ))
+    ) : (
+      <pre style={{ color: "red", whiteSpace: "pre-wrap" }}>
+        {JSON.stringify(error, null, 2)}
+      </pre>
+    )}
+  </Box>
+)}
+
             </CardContent>
           </Card>
         </Grid>
